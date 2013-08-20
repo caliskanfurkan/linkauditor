@@ -1,25 +1,36 @@
+# CRL Auditor v 0.1
+# Furkan CALISKAN
+
 import time
-import thirdparty.httplib2
+import datetime
+import httplib2
+
+
+crl_list = ["http://LINK1,http://LINK2,http://LINK3"]
 
 def download_crl(url):
-	conn = thirdparty.httplib2.Http(".cache")
-	resp, content = conn.request(url, "GET")
-
-
-	# Status 200 mü bakılacak
-	
-	return resp
-	
-
-def sum_crl(crl):
-
-
+        conn = httplib2.Http()
+        resp, content = conn.request(url, "GET")
+        return resp.status
 
 def audit():
-	print "Dene"
+        for i in crl_list:
+                state = download_crl(i)
+		print state
+		if state != 200:
+			now = datetime.datetime.now()
+			d=now.date()
+			t=now.time()
+			to_print = str(d) + "  " + str(t) + " " + str(i) + "\n"
+			with open("error.txt","a") as myfile:
+					myfile.write(to_print)
+		print "\n"
 
 
 if __name__ == "__main__":
-	while True:
-		audit()
-		time.sleep(2)
+        while True:
+                audit()
+                time.sleep(120)
+		print "---------------------------------------------"
+
+
